@@ -1,0 +1,17 @@
+workflows:
+  default-workflow:
+    name: Default Workflow
+    environment:
+      vars:
+        ADMIN_DASHBOARD_WEBHOOK_URL: "https://n7575jhv-3000.inc1.devtunnels.ms/"
+    scripts:
+      - name: Build
+        script: flutter build apk
+    post-build:
+      scripts:
+        - |
+          if [ "$FCI_BUILD_STATUS" == "success" ]; then
+            curl -X POST -H "Content-Type: application/json" \
+            -d '{"build_url": "'"${FCI_BUILD_URL}"'", "status": "'"${FCI_BUILD_STATUS}"'"}' \
+            $ADMIN_DASHBOARD_WEBHOOK_URL
+          fi
